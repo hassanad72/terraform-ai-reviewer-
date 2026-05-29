@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   ai-review:
     runs-on: ubuntu-latest
@@ -49,3 +53,10 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
         python app/main.py
+
+    - name: comment ai review on pr
+      if: github.event_name == 'pull_request'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: review.md
+        message: "AI Review of Terraform Plan:"    
