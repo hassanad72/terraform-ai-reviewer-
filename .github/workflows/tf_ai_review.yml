@@ -34,6 +34,10 @@ jobs:
     
     - name: Generate Terraform Plan
       working-directory: ./terraform
+      env:
+        AWS_ACCESS_KEY_ID: dummy
+        AWS_SECRET_ACCESS_KEY: dummy
+        AWS_DEFAULT_REGION: us-east-1
       run: terraform plan -out=tfplan
     
     - name: Convert Terraform Plan to JSON
