@@ -1,0 +1,8 @@
+Company Terraform Standards
+
+1. Use reusable modules where possible.
+2. Avoid hardcoded values.
+3. Remote backend is required for shared environments.
+4. Resources should not be created in the default VPC.
+5. Security groups should include clear descriptions.
+6. Production infrastructure must use explicit VPC and subnet references.

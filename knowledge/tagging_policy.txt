@@ -1,0 +1,11 @@
+Company Tagging Policy
+
+All AWS resources must include these tags:
+
+1. Environment
+2. Owner
+3. CostCenter
+4. Application
+5. ManagedBy
+
+Resources missing required tags should be flagged as non-compliant.

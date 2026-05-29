@@ -1,0 +1,7 @@
+company security standards
+
+1. SSH must never be open to 0.0.0.0/0.
+2. security groups must use least privilege.
+3. Public S3 buckets are prohibited. 
+4. IAM wildcard actions are prohibited.
+5. Prefer AWS systems Manager session manager over SSH. 
