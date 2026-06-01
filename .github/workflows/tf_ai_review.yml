@@ -59,4 +59,14 @@ jobs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: review.md
-        message: "AI Review of Terraform Plan:"    
+        message: "AI Review of Terraform Plan:"  
+
+    - name: Fail if risk score is high
+      run: |
+        SCORE=$(cat risk_score.txt)
+        echo "Risk score is $SCORE"
+
+        if [ "$SCORE" -ge 8]; then 
+          echo "critical risk detected failing pipeline"
+          exit 1   
+        fi 

@@ -25,6 +25,9 @@ with open("review.md", 'w') as f:
 
 print(f"Risk Score: {risk_score}")
 
-if risk_score >= 8:
-    print("Critical risk detected. Failing pipeline.")
-    exit(1)
+with open("risk_score.txt", "w") as f:
+    f.write(str(risk_score))
+
+#if risk_score >= 8:
+ #   print("Critical risk detected. Failing pipeline.")
+  #  exit(1)
