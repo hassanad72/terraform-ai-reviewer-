@@ -63,10 +63,12 @@ jobs:
 
     - name: Fail if risk score is high
       run: |
-        SCORE=$(cat risk_score.txt)
+        SCORE=$(cat risk_score.txt) | tr -d '[:space:]')
+        THRESHOLD=$(cat risk_threshold.txt) | tr -d '[:space:]')
         echo "Risk score is $SCORE"
+        echo "Risk threshold is $THRESHOLD"
 
-        if [ "$SCORE" -ge 8 ]; then 
+        if [ "$SCORE" -ge "$THRESHOLD" ]; then 
           echo "critical risk detected failing pipeline"
           exit 1   
         fi 
