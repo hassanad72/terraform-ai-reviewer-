@@ -20,9 +20,11 @@ prompt = build_review_prompt(resources_changes, knowledge)
 review = invoke(prompt)
 risk_score = extract_risk_score(review)
 config = load_config()
-risk_threshold = config["risk_threshold"]
+environment = config["environment"]
+risk_threshold = config["risk_thresholds"][environment]
 print(f"Risk Threshold: {risk_threshold}")
 print(review)
+print(f"Environment: {environment}")
 
 with open("review.md", 'w') as f:
     f.write(review)
