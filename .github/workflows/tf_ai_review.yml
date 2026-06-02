@@ -59,7 +59,7 @@ jobs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: review.md
-        message: "AI Review of Terraform Plan:"  
+        comment_tag: 'Terraform AI Review'
 
     - name: Fail if risk score is high
       run: |
