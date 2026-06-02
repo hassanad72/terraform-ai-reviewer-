@@ -63,8 +63,8 @@ jobs:
 
     - name: Fail if risk score is high
       run: |
-        SCORE=$(cat risk_score.txt) | tr -d '[:space:]')
-        THRESHOLD=$(cat risk_threshold.txt) | tr -d '[:space:]')
+        SCORE=$(cat risk_score.txt | tr -d '[:space:]')
+        THRESHOLD=$(cat risk_threshold.txt | tr -d '[:space:]')
         echo "Risk score is $SCORE"
         echo "Risk threshold is $THRESHOLD"
 
