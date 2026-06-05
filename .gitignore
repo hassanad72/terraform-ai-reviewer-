@@ -1,6 +1,7 @@
 .env
 venv/
 review.md
+k8s/openai-secret.yaml
 
 __pycache__/
 *.pyc
