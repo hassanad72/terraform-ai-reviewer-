@@ -36,5 +36,5 @@ jobs:
 
       - name: Push image to ecr
         run: |
-          IMAGE_URI=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:{{ github.sha}}
+          IMAGE_URI=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha}}
           docker push $IMAGE_URI
