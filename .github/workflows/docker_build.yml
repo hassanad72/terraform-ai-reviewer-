@@ -41,7 +41,7 @@ jobs:
 
       - name: update kubeconfig
         run: |
-          aws eks update-kubeconfig --region us-east-1 --name terraform-ai-reviewer-cluster
+          aws eks update-kubeconfig --region us-east-1 --name ai-reviewer-cluster
 
       - name: deploy to eks
         run: |
