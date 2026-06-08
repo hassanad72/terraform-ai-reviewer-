@@ -38,3 +38,14 @@ jobs:
         run: |
           IMAGE_URI=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha}}
           docker push $IMAGE_URI
+
+      - name: update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name terraform-ai-reviewer-cluster
+
+      - name: deploy to eks
+        run: |
+          kubectl delete job terraform-ai-reviewer-job --ignore-not-found
+          kubectl create job terraform-ai-reviewer-job \
+            --image=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }} \
+            --restart=Never
