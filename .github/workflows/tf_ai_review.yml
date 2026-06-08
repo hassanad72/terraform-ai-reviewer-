@@ -1,8 +1,7 @@
 name: Terraform AI Reviewer
 
 on:
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -70,3 +69,4 @@ jobs:
           echo "critical risk detected failing pipeline"
           exit 1   
         fi 
+
