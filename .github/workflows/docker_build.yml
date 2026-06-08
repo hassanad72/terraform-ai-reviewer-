@@ -1,0 +1,37 @@
+name: Build and push docker image
+
+on:
+  push: 
+    branches:
+      - main
+
+permissions:
+  id-token: write 
+  contents: read
+
+jobs:
+  docker-Build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::505342848876:role/github-actions-tf
+          aws-region: us-east-1
+
+      - name: login to ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build docker image
+        run: |
+          docker build -t terraform-ai-reviewer .
+          docker tag terrafrom-ai-reviewer: latest \
+          505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha}}
+
+      - name: Push image to ecr
+        run: |
+          docker push 505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:{{ github.sha}}
