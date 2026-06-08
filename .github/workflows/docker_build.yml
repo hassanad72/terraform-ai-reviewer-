@@ -4,6 +4,7 @@ on:
   push: 
     branches:
       - main
+      - ai-risk-scoring
 
 permissions:
   id-token: write 
