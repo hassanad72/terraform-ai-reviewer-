@@ -48,4 +48,4 @@ jobs:
           kubectl delete job terraform-ai-reviewer-job --ignore-not-found
           kubectl create job terraform-ai-reviewer-job \
             --image=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }} \
-            --restart=Never
+            
