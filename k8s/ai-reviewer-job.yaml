@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: ai-reviewer
-        image: 505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:latest
+        image: IMAGE_PLACEHOLDER
         env:
         - name: OPENAI_API_KEY
           valueFrom:

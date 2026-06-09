@@ -46,6 +46,6 @@ jobs:
       - name: deploy to eks
         run: |
           kubectl delete job terraform-ai-reviewer-job --ignore-not-found
-          kubectl create job terraform-ai-reviewer-job \
-            --image=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }} \
+
+          sed "s|IMAGE_PLACEHOLDER|505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }}|g" k8s/ai-reviewer-job.yaml | kubectl apply -f -
             
