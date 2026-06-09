@@ -24,6 +24,22 @@ jobs:
           role-to-assume: arn:aws:iam::505342848876:role/github-actions-tf
           aws-region: us-east-1
 
+      - name: set up terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.5
+
+      - name: Generate Terraform plan JSON
+        run: |
+          cd terraform
+          terraform init
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+
+      - name: Upload artifact to S3
+        run: |
+          aws s3 cp terraform/tfplan.json s3://terraform-ai-reviewer-bucket-505342848876/plans/${{ github.sha }}/tfplan.json
+
       - name: login to ecr
         uses: aws-actions/amazon-ecr-login@v2
 
@@ -47,5 +63,7 @@ jobs:
         run: |
           kubectl delete job terraform-ai-reviewer-job --ignore-not-found
 
-          sed "s|IMAGE_PLACEHOLDER|505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }}|g" k8s/ai-reviewer-job.yaml | kubectl apply -f -
+          sed -e "s|IMAGE_PLACEHOLDER|505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }}|g" \
+              -e "s|S3_PLAN_PATH_PLACEHOLDER|s3://terraform-ai-reviewer-bucket-505342848876/plans/${{ github.sha }}/tfplan.json|g" \
+              k8s/ai-reviewer-job.yaml | kubectl apply -f -
             
