@@ -67,3 +67,16 @@ jobs:
               -e "s|S3_PLAN_PATH_PLACEHOLDER|s3://terraform-ai-reviewer-bucket-505342848876/plans/${{ github.sha }}/tfplan.json|g" \
               k8s/ai-reviewer-job.yaml | kubectl apply -f -
             
+      - name: wait for job completion
+        run: |
+          kubectl wait --for=condition=complete --timeout=180s job/terraform-ai-reviewer-job
+
+      - name: get job logs
+        run: |
+          kubectl logs job/terraform-ai-reviewer-job > review_ai.md
+
+      - name: uplooad AI review
+        uses: actions/upload-artifact@v3
+        with:
+          name: ai-review
+          path: review_ai.md
