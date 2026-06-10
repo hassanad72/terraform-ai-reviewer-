@@ -9,6 +9,7 @@ on:
 permissions:
   id-token: write 
   contents: read
+  pull-requests: write
 
 jobs:
   docker-Build:
@@ -80,3 +81,10 @@ jobs:
         with:
           name: ai-review
           path: review_ai.md
+
+      - name: comment ai review on pr
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: review_ai.md
+          comment_tag: 'Terraform AI Review'
