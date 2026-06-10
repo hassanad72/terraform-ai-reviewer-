@@ -1,10 +1,9 @@
 name: Build and push docker image
 
 on:
-  push: 
+  pull_request:
     branches:
       - main
-      - ai-risk-scoring
 
 permissions:
   id-token: write 
