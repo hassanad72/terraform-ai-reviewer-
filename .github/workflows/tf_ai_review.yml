@@ -1,10 +1,7 @@
 name: Terraform AI Reviewer
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install openai python-dotenv
+        pip install openai python-dotenv pyyaml
 
     - name: set up terraform
       uses: hashicorp/setup-terraform@v3
@@ -59,4 +56,17 @@ jobs:
       uses: thollander/actions-comment-pull-request@v2
       with:
         filePath: review.md
-        message: "AI Review of Terraform Plan:"    
+        comment_tag: 'Terraform AI Review'
+
+    - name: Fail if risk score is high
+      run: |
+        SCORE=$(cat risk_score.txt | tr -d '[:space:]')
+        THRESHOLD=$(cat risk_threshold.txt | tr -d '[:space:]')
+        echo "Risk score is $SCORE"
+        echo "Risk threshold is $THRESHOLD"
+
+        if [ "$SCORE" -ge "$THRESHOLD" ]; then 
+          echo "critical risk detected failing pipeline"
+          exit 1   
+        fi 
+

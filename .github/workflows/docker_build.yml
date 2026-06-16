@@ -1,0 +1,89 @@
+name: Build and push docker image
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write 
+  contents: read
+  pull-requests: write
+
+jobs:
+  docker-Build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::505342848876:role/github-actions-tf
+          aws-region: us-east-1
+
+      - name: set up terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.5
+
+      - name: Generate Terraform plan JSON
+        run: |
+          cd terraform
+          terraform init
+          terraform plan -out=tfplan
+          terraform show -json tfplan > tfplan.json
+
+      - name: Upload artifact to S3
+        run: |
+          aws s3 cp terraform/tfplan.json s3://terraform-ai-reviewer-bucket-505342848876/plans/${{ github.sha }}/tfplan.json
+
+      - name: login to ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build docker image
+        run: |
+          IMAGE_URI=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }}
+          docker build -t terraform-ai-reviewer .
+          docker tag terraform-ai-reviewer:latest $IMAGE_URI
+         
+
+      - name: Push image to ecr
+        run: |
+          IMAGE_URI=505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }}
+          docker push $IMAGE_URI
+
+      - name: update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name ai-reviewer-cluster
+
+      - name: deploy to eks
+        run: |
+          kubectl delete job terraform-ai-reviewer-job --ignore-not-found
+
+          sed -e "s|IMAGE_PLACEHOLDER|505342848876.dkr.ecr.us-east-1.amazonaws.com/terraform-ai-reviewer:${{ github.sha }}|g" \
+              -e "s|S3_PLAN_PATH_PLACEHOLDER|s3://terraform-ai-reviewer-bucket-505342848876/plans/${{ github.sha }}/tfplan.json|g" \
+              k8s/ai-reviewer-job.yaml | kubectl apply -f -
+            
+      - name: wait for job completion
+        run: |
+          kubectl wait --for=condition=complete --timeout=180s job/terraform-ai-reviewer-job
+
+      - name: get job logs
+        run: |
+          kubectl logs job/terraform-ai-reviewer-job > review_ai.md
+
+      - name: uplooad AI review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-review
+          path: review_ai.md
+
+      - name: comment ai review on pr
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: review_ai.md
+          comment_tag: 'Terraform AI Review'

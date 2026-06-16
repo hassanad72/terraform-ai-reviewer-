@@ -1,0 +1,6 @@
+risk_thresholds:
+  dev: 10
+  stage: 8
+  prod: 6
+
+environment: dev

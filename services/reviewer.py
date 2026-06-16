@@ -25,10 +25,25 @@ Terraform Plan JSON:
 
 {terraform_plan}
 
+Assign a risk score from 1-10
+
+Risk score guidelines:
+
+1-3: Low
+4-6: medium
+7-8: High
+9-10: Critical 
+
 Return your response in this format:
 
 Summary:
 Risks:
 Recommendations:
 Severity:
+Risk Score: <number>
+
+Example:
+
+Severity: Critical 
+Risk Score: 9
 """

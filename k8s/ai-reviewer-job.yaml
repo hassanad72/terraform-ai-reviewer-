@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-reviewer-sa
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::505342848876:role/eks-ai-reviewer-sa-role
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: terraform-ai-reviewer-job
+spec:
+  template:
+    spec:
+      serviceAccountName: ai-reviewer-sa
+      containers:
+      - name: ai-reviewer
+        image: IMAGE_PLACEHOLDER
+        env:
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openai-api-key
+              key: OPENAI_API_KEY
+        - name: S3_PLAN_PATH
+          value: "S3_PLAN_PATH_PLACEHOLDER"
+        - name: AWS_DEFAULT_REGION
+          value: "us-east-1"
+      restartPolicy: Never
+  backoffLimit: 4
